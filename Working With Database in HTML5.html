@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Javascript Assignment</title>
+
+</head>
+
+
+  <body>    
+   <br/><br/>
+    <div >
+    <h1>Assignment Category</h1>
+     <input type="hidden" id="id"/>
+     <b>Current Drink:</b><input type="text" id="currentdrink"/><br/>
+     <b>Smoothie:</b><input type="text" id="smoothie"/><br/>
+    <b>Large Smoothie:</b><input type="text" id="largesmoothie"/><br/>
+   <b>Small Milkshake:</b><input type="text" id="smallmilkshake"/><br/>
+     <b>Medium smoothie:</b> <input type="text" id="mediumsmoothie"/><br/>
+<b>Total:</b><input type="text" id="total"/><br/>
+<button onClick="InsertData()">Insert Data</button>
+<button onClick="UpdateData()">Update Data</button>
+     <button onClick="ClearData()">Clear</button>
+       <br/><br/><br/> 
+     <div id="details"></div>
+    </div>
+  </body>
+  <script>
+
+ var id = document.getElementById('id');
+ var firstName = document.getElementById('currentdrink');
+var city=  document.getElementById('smoothie');
+var state=  document.getElementById('largesmoothie');
+var email=  document.getElementById('smallmilkshake');
+ var lastName = document.getElementById('mediumsmoothie');  
+ var phone = document.getElementById('total');
+var results = document.getElementById('details'); 
+ var db = openDatabase("MYDATABASE", "1.0", "MYDB", 4*1024*1024);
+ var mydata;
+ CreateTable(); 
+      function ShowData(){
+        results.innerHTML = '';
+        db.transaction(function(tx) {
+          tx.executeSql("SELECT * FROM Emp", [], function(tx, result) {
+mydata = result.rows;
+            for (var i = 0, item = null; i < mydata.length; i++) {
+              item = mydata.item(i);
+              results.innerHTML += 
+                  '<b>Current Drink : </b>' + item['currentdrink'] + ' , '+'<b>Smoothie :</b> ' + item['smoothie'] +' , '+'<b>Largesmoothie : </b>' + item['largesmoothie'] +' , '+'<b>Small Milkshake :</b>' + item['smallmilkshake'] +  ' , '+'<b>Medium Smoothie: </b>' + item['mediumsmoothie'] +  ' , '+'<b>Total : </b>' + item['total'] +  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img height="20" width="20" src="Edit.jpg" onclick="LoadMyData('+i+')" />' +  
+ '<img height="20" width="20" src="delete.jpg" onclick="deleteData('+item['id']+')" /><br/>';
+}
+          });
+        });
+      }
+function CreateTable() { 
+        db.transaction(function(tx) {
+          tx.executeSql("CREATE TABLE IF NOT EXISTS Emp (id INTEGER PRIMARY KEY AUTOINCREMENT, currentdrink TEXT, smoothie TEXT,largesmoothie TEXT,smallmilkshale TEXT, mediumsmoothie TEXT,total TEXT)");
+        });
+      }
+       function ShowErrorMessage(tx, error) {
+        alert(error.message);
+      }
+     
+      
+      
+      function InsertData() {
+var insertStatement = "INSERT INTO Emp (currentdrink, smoothie, largesmoothie,smallmilkshake,mediumsmoothie,total) VALUES (?, ?, ?,?,?,?)";
+        db.transaction(function(tx) {
+         
+          tx.executeSql(insertStatement, [currentdrink.value, smoothie.value,largesmoothie.value,smallmilkshake.value,mediumsmoothie.value,total.value],showdatacleardata, ShowErrorMessage);
+        });
+      }
+      
+ function LoadMyData(i) {
+var item = mydata.item(i); 
+currentdrink.value = item['currentdrink'];
+smoothie.value = item['smoothie'];
+largesmoothie.value=item['largesmoothie'];
+smallmilkshake.value=item['smallmilkshake'];
+mediumsmoothie.value = item['mediumsmoothie'];
+total.value=item['total'];
+id.value = item['id']; 
+      }
+      function UpdateData() {
+ var updateStatement = "UPDATE Emp SET currentdrink = ?, smoothie = ?,largesmoothie=?,smallmilkshake=? ,mediumsmoothie = ?,total=? WHERE id = ?";
+        db.transaction(function(tx) {
+
+          tx.executeSql(updateStatement, [currentdrink.value, smoothie.value,largesmoothie.value,smallmilkshake.value,mediumsmoothie.value,total.value,id.value],showdatacleardata, ShowErrorMessage);
+        }); 
+      }
+      
+      function deleteData(id) {
+ var deleteStatement = "DELETE FROM Emp WHERE id=?";
+        db.transaction(function(tx) {
+          tx.executeSql(deleteStatement, [id], ShowData(), ShowErrorMessage);
+        });
+ClearData();
+      }
+       
+      
+
+ function showdatacleardata(){
+ ClearData();
+ ShowData();
+ }
+
+ function ClearData(){
+currentdrink.value = '';
+smoothie.value = '';
+largesmoothie.value='';
+smallmilkshake.value='';
+mediumsmoothie.value='';
+total.value = '';
+id.value = ''; 
+ }
+   
+</script>
+</html>
